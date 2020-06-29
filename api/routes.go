@@ -14,18 +14,24 @@ func GetUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	logUrl(r)
 
 	// get form value
-	user_id, err := strconv.Atoi(r.FormValue("user_id"))
+	user_id, _ := strconv.Atoi(r.FormValue("user_id"))
 	login_name := r.FormValue("login_name")
 
-	if err != nil && login_name == "" {
-		respondError(w, "invalid form value\n")
+	user := User{}
+	var err error
+
+	// get user
+	if user_id != 0 {
+		user, err = getUser(user_id)
+	} else if login_name != "" {
+		user, err = getUserWithLoginName(login_name)
+	} else {
+		respondError(w, "invalid form value")
 		return
 	}
 
-	// get user
-	user, err := getUser(user_id)
 	if err != nil {
-		respondError(w, "failed to get user\n")
+		respondError(w, "failed to get user")
 		return
 	}
 
@@ -40,9 +46,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	// get form values
 	login_name := r.FormValue("login_name")
 
-	// all fields mustn't be empty
 	if login_name == "" {
-		respondError(w, "invalid form value. login_name can't be empty\n")
+		respondError(w, "invalid form value. login_name can't be empty")
 		return
 	}
 
@@ -51,7 +56,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	// create user
 	user, err := createUser(login_name)
 	if err != nil {
-		respondError(w, "failed to create user\n")
+		respondError(w, "failed to create user")
 		return
 	}
 

@@ -29,12 +29,14 @@ func getUser(user_id int) (User, error) {
 /* getUserWithLoginName gets an user with specified login name */
 func getUserWithLoginName(login_name string) (User, error) {
 	// get a row
-	row := db.QueryRow(`SELECT * FROM users login_name = ? LIMIT 1;`, login_name)
+	row := db.QueryRow(`SELECT * FROM users WHERE login_name = ? LIMIT 1;`, login_name)
 
 	user := User{}
 
 	// scan data
 	err := row.Scan(&user.Id, &user.LoginName)
+
+	log.Printf("get user %v", user)
 
 	return user, err
 }
