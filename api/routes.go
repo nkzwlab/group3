@@ -43,15 +43,13 @@ func GetUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	logUrl(r)
 
-	// get form values
+	// get form value
 	login_name := r.FormValue("login_name")
 
 	if login_name == "" {
 		respondError(w, "invalid form value. login_name can't be empty")
 		return
 	}
-
-	log.Println("login name:", login_name)
 
 	// create user
 	user, err := createUser(login_name)
