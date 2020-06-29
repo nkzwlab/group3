@@ -14,6 +14,7 @@ INSERT INTO users(login_name) VALUES ("kino-ma");
 CREATE TABLE IF NOT EXISTS kadai(
     id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id INT(11) NOT NULL,
+    done BOOLEAN NOT NULL DEFAULT false,
     title VARCHAR(40) NOT NULL,
     content VARCHAR(200) NOT NULL,
     draft VARCHAR(1000) NOT NULL,

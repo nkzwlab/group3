@@ -18,6 +18,7 @@ type User struct {
 type Kadai struct {
 	Id      int    `json:"id"`
 	UserId  int    `json:"-"`
+	Done    bool   `json:"done"`
 	User    User   `json:"user"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
@@ -73,8 +74,7 @@ func createUser(login_name string) (User, error) {
 func getKadai(kadai_id int) (Kadai, error) {
 	row := db.QueryRow(`SELECT * FROM kadai WHERE id = ? LIMIT 1;`, kadai_id)
 
-	kadai := Kadai{}
-	err := row.Scan(&kadai.Id, &kadai.UserId, &kadai.Title, &kadai.Content, &kadai.Draft)
+	kadai, err := scanKadai(row)
 	if err != nil {
 		log.Println("error:", err)
 		return Kadai{}, err
@@ -98,8 +98,8 @@ func kadaiIndex(user_id int) ([]Kadai, error) {
 
 	var kadais []Kadai
 	for rows.Next() {
-		kadai := Kadai{}
-		if err := rows.Scan(&kadai.Id, &kadai.UserId, &kadai.Title, &kadai.Content, &kadai.Draft); err != nil {
+		kadai, err := scanKadai(rows)
+		if err != nil {
 			log.Printf("error: %v", err)
 			return []Kadai{}, err
 		}
@@ -149,6 +149,16 @@ func updateKadai(kadai_id int, updateData map[string]string) (Kadai, error) {
 	log.Printf("updated kadai %v", kadai_id)
 
 	return getKadai(kadai_id)
+}
+
+type RowData interface {
+	Scan(...interface{}) error
+}
+
+func scanKadai(row RowData) (Kadai, error) {
+	kadai := Kadai{}
+	err := row.Scan(&kadai.Id, &kadai.UserId, &kadai.Done, &kadai.Title, &kadai.Content, &kadai.Draft)
+	return kadai, err
 }
 
 /* init initalizes database */
