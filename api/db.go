@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"database/sql"
@@ -94,6 +95,30 @@ func createKadai(user_id int, title, content, draft string) (Kadai, error) {
 		return Kadai{}, err
 	}
 	log.Printf("created kadai %v", kadai_id)
+
+	return getKadai(kadai_id)
+}
+
+/* updateKadai updates kadai info in db */
+func updateKadai(kadai_id int, updateData map[string]string) (Kadai, error) {
+	query := `UPDATE kadai SET `
+
+	for k, v := range updateData {
+		query += fmt.Sprintf(`%v = '%v',`, k, v)
+	}
+
+	query = query[:len(query)-1]
+	query += ` WHERE id = ?`
+
+	_, err := db.Query(query, kadai_id)
+	if err != nil {
+		log.Printf("failed to send query")
+		log.Printf(query)
+		log.Printf("error: %v", err)
+		return Kadai{}, err
+	}
+
+	log.Printf("updated kadai %v", kadai_id)
 
 	return getKadai(kadai_id)
 }

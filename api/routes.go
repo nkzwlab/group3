@@ -39,7 +39,7 @@ func GetUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	respondJson(w, user)
 }
 
-/* CreateUser creates user info */
+/* CreateUser creates user */
 func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	logUrl(r)
 
@@ -61,6 +61,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	respondJson(w, user)
 }
 
+/* UpdateKadai inserts kadai information into db */
 func CreateKadai(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	logUrl(r)
 
@@ -83,6 +84,47 @@ func CreateKadai(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	kadai, err := createKadai(user_id, title, content, draft)
 	if err != nil {
 		respondError(w, "failed to create kadai")
+		return
+	}
+
+	respondJson(w, kadai)
+}
+
+/* UpdateKadai updates kadai informations in db */
+func UpdateKadai(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	logUrl(r)
+
+	kadai_id, err := strconv.Atoi(r.FormValue("kadai_id"))
+	if err != nil {
+		respondJson(w, "invalid kadai id")
+		return
+	}
+
+	updateData := map[string]string{}
+
+	title := r.FormValue("title")
+	if title != "" {
+		updateData["title"] = title
+	}
+
+	content := r.FormValue("content")
+	if content != "" {
+		updateData["content"] = content
+	}
+
+	draft := r.FormValue("draft")
+	if draft != "" {
+		updateData["draft"] = draft
+	}
+
+	if len(updateData) == 0 {
+		respondError(w, "you must specify at least one field")
+		return
+	}
+
+	kadai, err := updateKadai(kadai_id, updateData)
+	if err != nil {
+		respondError(w, "failed to update kadai")
 		return
 	}
 

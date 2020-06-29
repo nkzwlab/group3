@@ -25,8 +25,8 @@ func main() {
 
 	router.POST("/kadai/new", CreateKadai)
 	//rouer.GET("/kadai", KadaiIndex)
-	//rouer.PATCH("/kadai/update", UpdateKadai)
-	//rouer.PATCH("/kadai/done", KadaiDone)
+	router.PATCH("/kadai/update", UpdateKadai)
+	//router.PATCH("/kadai/done", KadaiDone)
 
 	// start server
 	log.Printf("Start Listening on :8080")
