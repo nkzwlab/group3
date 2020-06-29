@@ -17,6 +17,9 @@ db:
 db-d:
 	$(COMPOSE) up -d db
 
+mysql:
+	$(COMPOSE) exec db mysql -uroot -p db -pPASSWORD 
+
 build:
 	$(COMPOSE) build
 

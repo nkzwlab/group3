@@ -4,10 +4,10 @@ USE db;
 
 CREATE TABLE IF NOT EXISTS users(
     id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    login_name VARCHAR(30) NOT NULL,
+    login_name VARCHAR(30) NOT NULL
 );
 
-INSERT INTO user(login_name) VALUES ("kino-ma");
+INSERT INTO users(login_name) VALUES ("kino-ma");
 
 
 CREATE TABLE IF NOT EXISTS kadai(
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS kadai(
     title VARCHAR(40) NOT NULL,
     content VARCHAR(200) NOT NULL,
     draft VARCHAR(30),
-    FOREIGN KEY(user_id) REFERENCES users(id),
+    FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
 INSERT INTO kadai(user_id, title, content) VALUES (1, "jn_lecture", "グループでWebサービスを作る");
