@@ -151,6 +151,14 @@ func updateKadai(kadai_id int, updateData map[string]string) (Kadai, error) {
 	return getKadai(kadai_id)
 }
 
+func kadaiDone(kadai_id int) error {
+	_, err := db.Exec(`UPDATE kadai SET done = true WHERE id = ?;`, kadai_id)
+	if err != nil {
+		log.Printf("error: %v", err)
+	}
+	return err
+}
+
 type RowData interface {
 	Scan(...interface{}) error
 }

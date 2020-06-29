@@ -10,6 +10,16 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+type succeed struct {
+	Success bool   `json:"success"`
+	Error   string `json:"error,omitempty"`
+}
+
+var (
+	responseSuccess = succeed{Success: true}
+	responseFailure = succeed{Success: false}
+)
+
 /* GetUser returns user info */
 func GetUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	logUrl(r)
@@ -123,7 +133,7 @@ func UpdateKadai(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	kadai_id, err := strconv.Atoi(r.FormValue("kadai_id"))
 	if err != nil {
-		respondJson(w, "invalid kadai id")
+		respondError(w, "invalid kadai id")
 		return
 	}
 
@@ -156,6 +166,25 @@ func UpdateKadai(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	respondJson(w, kadai)
+}
+
+/* KadaiDone updates `done` field of specified kadai */
+func KadaiDone(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	logUrl(r)
+
+	kadai_id, err := strconv.Atoi(r.FormValue("kadai_id"))
+	if err != nil {
+		respondError(w, "invalid kadai id")
+		return
+	}
+
+	err = kadaiDone(kadai_id)
+	if err != nil {
+		respondError(w, "failed to mark as done")
+		return
+	}
+
+	respondJson(w, responseSuccess)
 }
 
 type ErrorJson struct {
