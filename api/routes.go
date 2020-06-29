@@ -68,10 +68,16 @@ func CreateKadai(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	user_id, err := strconv.Atoi(r.FormValue("user_id"))
 	if err != nil {
 		respondError(w, "invalid user id")
+		return
 	}
 
 	title := r.FormValue("title")
 	content := r.FormValue("content")
+	if title == "" || content == "" {
+		respondError(w, "title and content can't be empty")
+		return
+	}
+
 	draft := r.FormValue("draft")
 
 	kadai, err := createKadai(user_id, title, content, draft)

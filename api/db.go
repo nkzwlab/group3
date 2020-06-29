@@ -64,16 +64,18 @@ func createUser(login_name string) (User, error) {
 
 /* getKadai gets a kadai with specified id */
 func getKadai(kadai_id int) (Kadai, error) {
-	row := db.QueryRow(`SELECT * FROM kadai WEHRE id = ? LIMIT 1;`, kadai_id)
+	row := db.QueryRow(`SELECT * FROM kadai WHERE id = ? LIMIT 1;`, kadai_id)
 
 	kadai := Kadai{}
 	err := row.Scan(&kadai.Id, &kadai.UserId, &kadai.Title, &kadai.Content, &kadai.Draft)
 	if err != nil {
+		log.Println("error:", err)
 		return Kadai{}, err
 	}
 
 	kadai.User, err = getUser(kadai.UserId)
 	if err != nil {
+		log.Println("error:", err)
 		return Kadai{}, err
 	}
 
@@ -82,16 +84,18 @@ func getKadai(kadai_id int) (Kadai, error) {
 
 /* createKadai creates a kadai with specified params */
 func createKadai(user_id int, title, content, draft string) (Kadai, error) {
-	row := db.QueryRow(`INSERT INTO kadai(user_id, title, content, draft) VALUES (?, ?, ?, ?)`, user_id, title, content, draft)
+	_ = db.QueryRow(`INSERT INTO kadai(user_id, title, content, draft) VALUES (?, ?, ?, ?)`, user_id, title, content, draft)
 
-	kadai := Kadai{}
-	err := row.Scan(&kadai.Id, &kadai.UserId, &kadai.Title, &kadai.Content, &kadai.Draft)
+	row := db.QueryRow(`SELECT id FROM kadai WHERE user_id = ? AND title = ? AND content = ? AND draft = ? LIMIT 1;`, user_id, title, content, draft)
 
+	var kadai_id int
+	err := row.Scan(&kadai_id)
 	if err != nil {
 		return Kadai{}, err
 	}
+	log.Printf("created kadai %v", kadai_id)
 
-	return kadai, nil
+	return getKadai(kadai_id)
 }
 
 /* init initalizes database */
