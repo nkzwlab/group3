@@ -61,6 +61,27 @@ func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	respondJson(w, user)
 }
 
+/* KadaiIndex returns kadais of the specified user that have not been done */
+func KadaiIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	logUrl(r)
+
+	// get form value
+	user_id, err := strconv.Atoi(r.FormValue("user_id"))
+	if err != nil || user_id == 0 {
+		respondError(w, "invalid user id ")
+		return
+	}
+
+	// get kadais
+	kadais, err := kadaiIndex(user_id)
+	if err != nil {
+		respondError(w, "failed to get index")
+		return
+	}
+
+	respondJson(w, kadais)
+}
+
 /* UpdateKadai inserts kadai information into db */
 func CreateKadai(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	logUrl(r)

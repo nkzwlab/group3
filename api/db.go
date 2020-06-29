@@ -55,7 +55,7 @@ func getUserWithLoginName(login_name string) (User, error) {
 /* createUser creates an user with specified login_name */
 func createUser(login_name string) (User, error) {
 	// exec query
-	_, err := db.Query(`INSERT INTO users(login_name) VALUES(?);`, login_name)
+	_, err := db.Exec(`INSERT INTO users(login_name) VALUES(?);`, login_name)
 	if err != nil {
 		return User{}, err
 	}
@@ -81,6 +81,27 @@ func getKadai(kadai_id int) (Kadai, error) {
 	}
 
 	return kadai, nil
+}
+
+/* kadaiIndex gets kadais that havo not been done yet */
+func kadaiIndex(user_id int) ([]Kadai, error) {
+	rows, err := db.Query(`SELECT * FROM kadai WHERE user_id = ?`, user_id)
+	if err != nil {
+		return []Kadai{}, err
+	}
+
+	var kadais []Kadai
+	for rows.Next() {
+		kadai := Kadai{}
+		if err := rows.Scan(&kadai.Id, &kadai.UserId, &kadai.Title, &kadai.Content, &kadai.Draft); err != nil {
+			log.Printf("error: %v", err)
+			return []Kadai{}, err
+		}
+
+		kadais = append(kadais, kadai)
+	}
+
+	return kadais, nil
 }
 
 /* createKadai creates a kadai with specified params */

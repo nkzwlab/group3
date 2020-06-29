@@ -24,7 +24,7 @@ func main() {
 	router.POST("/user/new", CreateUser)
 
 	router.POST("/kadai/new", CreateKadai)
-	//rouer.GET("/kadai", KadaiIndex)
+	router.GET("/kadai", KadaiIndex)
 	router.PATCH("/kadai/update", UpdateKadai)
 	//router.PATCH("/kadai/done", KadaiDone)
 
