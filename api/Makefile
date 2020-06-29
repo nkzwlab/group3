@@ -1,2 +1,4 @@
+SCRIPTS := main.go db.go routes.go
+
 start:
-	go run main.go
+	go run $(SCRIPTS)
