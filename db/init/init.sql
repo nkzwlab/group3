@@ -4,7 +4,7 @@ USE db;
 
 CREATE TABLE IF NOT EXISTS users(
     id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    login_name VARCHAR(30) NOT NULL
+    login_name VARCHAR(30) NOT NULL PRIMARY KEY
 );
 
 INSERT INTO users(login_name) VALUES ("kino-ma");
