@@ -13,6 +13,16 @@ type User struct {
 	LoginName string `json:"login_name"`
 }
 
+/* Kadai is structure to get kadai information from db */
+type Kadai struct {
+	Id      int    `json:"id"`
+	UserId  int    `json:"-"`
+	User    User   `json:"user"`
+	Title   string `json:"title"`
+	Content string `json:"content"`
+	Draft   string `json:"draft"`
+}
+
 /* getUser gets an user with specified id */
 func getUser(user_id int) (User, error) {
 	// get a row
@@ -50,6 +60,38 @@ func createUser(login_name string) (User, error) {
 	}
 
 	return getUserWithLoginName(login_name)
+}
+
+/* getKadai gets a kadai with specified id */
+func getKadai(kadai_id int) (Kadai, error) {
+	row := db.QueryRow(`SELECT * FROM kadai WEHRE id = ? LIMIT 1;`, kadai_id)
+
+	kadai := Kadai{}
+	err := row.Scan(&kadai.Id, &kadai.UserId, &kadai.Title, &kadai.Content, &kadai.Draft)
+	if err != nil {
+		return Kadai{}, err
+	}
+
+	kadai.User, err = getUser(kadai.UserId)
+	if err != nil {
+		return Kadai{}, err
+	}
+
+	return kadai, nil
+}
+
+/* createKadai creates a kadai with specified params */
+func createKadai(user_id int, title, content, draft string) (Kadai, error) {
+	row := db.QueryRow(`INSERT INTO kadai(user_id, title, content, draft) VALUES (?, ?, ?, ?)`, user_id, title, content, draft)
+
+	kadai := Kadai{}
+	err := row.Scan(&kadai.Id, &kadai.UserId, &kadai.Title, &kadai.Content, &kadai.Draft)
+
+	if err != nil {
+		return Kadai{}, err
+	}
+
+	return kadai, nil
 }
 
 /* init initalizes database */

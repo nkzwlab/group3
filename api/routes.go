@@ -61,6 +61,28 @@ func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	respondJson(w, user)
 }
 
+func CreateKadai(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	logUrl(r)
+
+	// get form value
+	user_id, err := strconv.Atoi(r.FormValue("user_id"))
+	if err != nil {
+		respondError(w, "invalid user id")
+	}
+
+	title := r.FormValue("title")
+	content := r.FormValue("content")
+	draft := r.FormValue("draft")
+
+	kadai, err := createKadai(user_id, title, content, draft)
+	if err != nil {
+		respondError(w, "failed to create kadai")
+		return
+	}
+
+	respondJson(w, kadai)
+}
+
 type ErrorJson struct {
 	Error string `json:"error"`
 }
