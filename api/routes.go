@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
@@ -48,6 +49,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	if login_name == "" {
 		respondError(w, "invalid form value. login_name can't be empty")
+		return
+	}
+
+	if m, _ := regexp.MatchString(`^[0-9a-zA-Z-]*$`, login_name); !m {
+		respondError(w, "login name must matches regex `[0-9a-zA-Z-]*$`")
 		return
 	}
 
