@@ -32,5 +32,5 @@ func main() {
 
 	// start server
 	log.Printf("Start Listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
