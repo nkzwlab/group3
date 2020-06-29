@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS kadai(
     user_id INT(11) NOT NULL,
     title VARCHAR(40) NOT NULL,
     content VARCHAR(200) NOT NULL,
-    draft VARCHAR(30),
+    draft VARCHAR(1000) NOT NULL,
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
-INSERT INTO kadai(user_id, title, content) VALUES (1, "jn_lecture", "グループでWebサービスを作る");
+INSERT INTO kadai(user_id, title, content, draft) VALUES (1, "jn_lecture", "グループでWebサービスを作る", "課題管理サービスを開発中");

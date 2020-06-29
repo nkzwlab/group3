@@ -24,6 +24,12 @@ type Kadai struct {
 	Draft   string `json:"draft"`
 }
 
+func (kadai *Kadai) setUser() error {
+	var err error
+	kadai.User, err = getUser(kadai.UserId)
+	return err
+}
+
 /* getUser gets an user with specified id */
 func getUser(user_id int) (User, error) {
 	// get a row
@@ -74,9 +80,9 @@ func getKadai(kadai_id int) (Kadai, error) {
 		return Kadai{}, err
 	}
 
-	kadai.User, err = getUser(kadai.UserId)
+	err = kadai.setUser()
 	if err != nil {
-		log.Println("error:", err)
+		log.Printf("error: %v", err)
 		return Kadai{}, err
 	}
 
@@ -98,6 +104,7 @@ func kadaiIndex(user_id int) ([]Kadai, error) {
 			return []Kadai{}, err
 		}
 
+		kadai.setUser()
 		kadais = append(kadais, kadai)
 	}
 
