@@ -208,5 +208,7 @@ func respondJson(w http.ResponseWriter, data interface{}) {
 }
 
 func logUrl(r *http.Request) {
+	r.ParseForm()
 	log.Printf("access: %v", r.URL)
+	log.Printf("form: %v", r.Form)
 }
