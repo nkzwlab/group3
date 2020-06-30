@@ -8,8 +8,6 @@ services:
             - ./app:/app
         ports:
             - "0.0.0.0:3000:3000"
-        links:
-            - api
 
     api:
         build: ./api
@@ -18,8 +16,6 @@ services:
             - ./api:/api
         ports:
             - "0.0.0.0:8080:8080"
-        links:
-            - db
 
     db:
         build: ./db
