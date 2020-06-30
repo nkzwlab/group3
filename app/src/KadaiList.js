@@ -1,11 +1,11 @@
 import React from 'react';
 import './App.css';
 
-class App extends React.Component {
-    render = () => (
-        <div className="App">
-            <KadaiList />
-        </div>
+function App() {
+  return (
+    <div className="App">
+        <KadaiList />
+    </div>
   );
 }
 
@@ -13,18 +13,18 @@ class App extends React.Component {
 class KadaiList extends React.Component {
     constructor(props) {
         super(props);
-        fetch('http://localhost:8080/kadai?user_id=1').then(response => response.json()).then(this.setKadais).catch(error => console.error(error));
-        this.state = {kadais: []};
-    }
-
-    setKadais = data => {
-        console.log('fetched: ', data);
-        this.setState({kadais: data});
+        this.kadais = [
+            {
+                id: 0,
+                title: "jn_lecture",
+                content: "グループでWebサービスを作る",
+                draft: "課題管理サービスを開発中"
+            }
+        ];
     }
 
     render = () => {
-        console.log("state kadais: ", this.state.kadais);
-        const kadaiItems = this.state.kadais.map(kadai =>
+        const kadaiItems = this.kadais.map(kadai =>
             <KadaiItem
                 key={kadai.id}
                 kadai={kadai} />
