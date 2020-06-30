@@ -8,6 +8,9 @@ up:
 down:
 	$(COMPOSE) down
 
+app:
+	$(COMPOSE) up app
+
 api:
 	$(COMPOSE) up api
 
@@ -23,4 +26,4 @@ mysql:
 build:
 	$(COMPOSE) build
 
-.PHONY: default api db build
+.PHONY: default app api db build
