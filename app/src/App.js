@@ -4,41 +4,48 @@ import './App.css';
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            loggedIn: false
+        };
+    }
+
+    setUser = user => {
+        console.log("logged in as :", user.login_name)
+
+        if (!user.login_name || !user.id) {
+            throw "invalid user data";
+        }
+
+        this.setState({loggedIn: true, user: {
+            loginName: user.login_name,
+            id: user.id
+        }});
     }
 
     login = loginName => {
         const url = `http://localhost:8080/user?login_name=${loginName}`
         fetch(url)
             .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if (!data.login_name) {
-                    const newUrl =  `http://localhost:8080/user/new?login_name=${loginName}`;
-                    return fetch(newUrl, {
-                        method:"POST",
-                        headers: new Headers({
-                            'Accept': 'application/json',
-                        })
+            .then(this.setUser)
+            .catch(err => {
+                console.log(err);
+                const newUrl =  `http://localhost:8080/user/new?login_name=${loginName}`;
+                return fetch(newUrl, {
+                    method:"POST",
+                    headers: new Headers({
+                        'Accept': 'application/json',
                     })
-                }
-                return data
+                })
             })
-            .then(user => {
-                console.log("logged in as :", user.login_name)
-                this.setState({loggedIn: true, user: {
-                    loginName: user.login_name,
-                    id: user.id
-                }});
-            })
+            .then(response => response.json())
+            .then(this.setUser)
             .catch(error => console.log("error!: ", error));
     }
             body: body
     render = () => {
         const node = (this.state.loggedIn)
             ? (
-                <div>
-                    <h2>課題管理サービス</h2>
+                <div className="mainContent">
                     <KadaiList user={this.state.user} />
                 </div>)
             : <Login onLogin={this.login} onSubmit={this.login} />;
@@ -46,6 +53,7 @@ class App extends React.Component {
 
         return (
             <div className="App">
+                <h1 className="pageHeader">課題管理サービス</h1>
                 {node}
             </div>
         );
@@ -71,7 +79,7 @@ class Login extends React.Component {
     }
 
     render = () => (
-        <form onSubmit={this.handleSubmit}>
+        <form className="loginForm" onSubmit={this.handleSubmit}>
             <input type="text" value={this.state.loginName} onChange={this.handleChange} />
             <input type="submit" value="ログイン" />
         </form>
@@ -101,17 +109,20 @@ class KadaiList extends React.Component {
     }
 
     setKadais = data => {
-        if (data && data.length >= 1) {
+        if (data !== null && data !== undefined) {
             const kadais = data.map(kadai => {
                 return {
                     id: kadai.id,
                     userId: kadai.user_id,
                     title: kadai.title,
                     content: kadai.content,
-                    draft: kadai.draft
+                    draft: kadai.draft,
+                    editing: false
                 };
             })
-            this.setState({kadais});
+            this.setState({kadais: kadais});
+        } else {
+            this.setState({kadais: []});
         }
     }
 
@@ -126,20 +137,15 @@ class KadaiList extends React.Component {
     }
 
     updateDone = id => {
-        console.log("done called: ", id)
         const doneURL = `http://localhost:8080/kadai/done?kadai_id=${id}`;
 
         const body = new URLSearchParams();
         body.append('kadai_id', id);
 
         fetch(doneURL, {
-            method: "PATCH",
+            method: "POST",
         })
-            .then(response => response.json())
-            .then(data => {
-                alert("done!");
-                this.refreshKadais();
-            })
+            .then(response => alert("done!"))
             .catch(err => {
                 console.error("error!: ", err);
             })
@@ -162,10 +168,10 @@ class KadaiList extends React.Component {
 
         return (
             <div>
-                <h3>未提出課題一覧</h3>
+                <h2>未提出課題一覧</h2>
                 <button onClick={this.refreshKadais}>再読み込み</button>
                 {kadaiItems}
-                <h3>新しい課題を登録する</h3>
+                <h2>新しい課題を登録する</h2>
                 <PostKadai refresh={this.refreshKadais}
                            user={this.props.user} />
             </div>
@@ -225,10 +231,14 @@ class ShowKadai extends React.Component {
     render = () => {
         return (
             <div>
+                <h3 className="kadaiTitle">{this.kadai.title}</h3>
                 <ul>
-                    <li className="kadai">課題名: {this.kadai.title}</li>
-                    <li className="kadai">課題内容: {this.kadai.content}</li>
-                    <li className="kadai">下書き: {this.kadai.draft}</li>
+                    <li>課題内容:
+                        <p className="kadaiBody">{this.kadai.content}</p>
+                    </li>
+                    <li> 下書き:
+                        <p className="kadaiBody">{this.kadai.draft}</p>
+                    </li>
                 </ul>
                 <button className="edit" onClick={this.props.handleEdit} >編集</button>
                 <button className="done" onClick={this.props.handleDone} >提出完了</button>
@@ -293,7 +303,7 @@ class UpdateKadai extends React.Component {
         body.set('draft', kadai.draft);
 
         fetch(baseURL + body.toString(), {
-            method: "PATCH",
+            method: "POST",
             headers: new Headers({
                 'Accept': 'application/json',
             }),
@@ -333,14 +343,15 @@ class PostKadai extends React.Component {
             content: "",
             draft: "",
             editing: true
-        }
+        };
+        this.user = this.props.user;
     }
 
     postNewKadai = kadai => {
         const postURL = "http://localhost:8080/kadai/new";
 
         const body = new URLSearchParams();
-        body.append('user_id', this.props.user.id);
+        body.append('user_id', this.user.id);
         body.append('title', kadai.title);
         body.append('content', kadai.content);
         body.append('draft', kadai.draft);
@@ -382,8 +393,17 @@ class KadaiForm extends React.Component {
         const text = showText[type];
 
         const input = (type === "title")
-            ? <input type="text" value={this.props.value} onChange={this.handleChange} />
-            : <textarea type="text" value={this.props.value} onChange={this.handleChange} />;
+            ? <input
+                type="text"
+                value={this.props.value}
+                onChange={this.handleChange}
+                className="kadaiEditTitle" />
+            : <textarea
+                type="text"
+                value={this.props.value}
+                onChange={this.handleChange}
+                className="kadaiEditBody" />;
+
         return (
             <li>
                 <p>{text}</p>
