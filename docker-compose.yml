@@ -1,6 +1,14 @@
 version: '3'
 
 services:
+    app:
+        build: ./app
+        tty: true
+        volumes:
+            - ./app:/app
+        ports:
+            - "0.0.0.0:3000:3000"
+
     api:
         build: ./api
         tty: true
@@ -8,8 +16,6 @@ services:
             - ./api:/api
         ports:
             - "0.0.0.0:8080:8080"
-        links:
-            - db
 
     db:
         build: ./db

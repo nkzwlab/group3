@@ -202,9 +202,13 @@ func respondJson(w http.ResponseWriter, data interface{}) {
 
 	// return json
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
 	json.NewEncoder(w).Encode(data)
 }
 
 func logUrl(r *http.Request) {
+	r.ParseForm()
 	log.Printf("access: %v", r.URL)
+	log.Printf("form: %v", r.Form)
 }
