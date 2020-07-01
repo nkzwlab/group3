@@ -91,7 +91,7 @@ func getKadai(kadai_id int) (Kadai, error) {
 
 /* kadaiIndex gets kadais that havo not been done yet */
 func kadaiIndex(user_id int) ([]Kadai, error) {
-	rows, err := db.Query(`SELECT * FROM kadai WHERE user_id = ?`, user_id)
+	rows, err := db.Query(`SELECT * FROM kadai WHERE user_id = ? AND done = false`, user_id)
 	if err != nil {
 		return []Kadai{}, err
 	}

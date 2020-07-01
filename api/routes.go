@@ -202,7 +202,7 @@ func respondJson(w http.ResponseWriter, data interface{}) {
 
 	// return json
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	json.NewEncoder(w).Encode(data)
 }
