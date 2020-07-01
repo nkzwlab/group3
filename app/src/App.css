@@ -1,5 +1,5 @@
 .App {
-  text-align: center;
+  margin: 2em;
 }
 
 .App-logo {
@@ -35,4 +35,14 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+
+.kadai {
+    text-align: left;
+}
+
+.edit {
+    text-align: center;
+    margin-left: 3em;
 }
