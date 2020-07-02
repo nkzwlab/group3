@@ -13,7 +13,7 @@ class App extends React.Component {
         console.log("logged in as :", user.login_name)
 
         if (!user.login_name || !user.id) {
-            throw "invalid user data";
+            throw user["error"];
         }
 
         this.setState({loggedIn: true, user: {
@@ -27,8 +27,11 @@ class App extends React.Component {
         fetch(url)
             .then(response => response.json())
             .then(this.setUser)
-            .catch(err => {
-                console.log(err);
+            .catch(error => {
+                let text = error;
+                if (error["error"]) {
+                    const text = error.error;
+                }
                 const newUrl =  `http://localhost:8080/user/new?login_name=${loginName}`;
                 return fetch(newUrl, {
                     method:"POST",
@@ -39,7 +42,13 @@ class App extends React.Component {
             })
             .then(response => response.json())
             .then(this.setUser)
-            .catch(error => console.log("error!: ", error));
+            .catch(error => {
+                let text = error;
+                if (error["error"]) {
+                    const text = error.error;
+                }
+                alert("エラーが発生しました：" + text);
+            });
     }
             body: body
     render = () => {
@@ -105,7 +114,13 @@ class KadaiList extends React.Component {
         fetch(kadaiURL)
             .then(response => response.json())
             .then(this.setKadais)
-            .catch(error => console.log(error));
+            .catch(error => {
+                let text = error;
+                if (error["error"]) {
+                    const text = error.error;
+                }
+                alert("エラーが発生しました：" + text);
+            });
     }
 
     setKadais = data => {
@@ -317,8 +332,12 @@ class UpdateKadai extends React.Component {
                 }
                 console.log(data)
             })
-            .catch(err => {
-                console.log("error!: ", err);
+            .catch(error => {
+                let text = error;
+                if (error["error"]) {
+                    const text = error.error;
+                }
+                alert("エラーが発生しました：" + text);
             })
             .finally(() => {
                 this.props.finishEdit(kadai);
@@ -369,7 +388,14 @@ class PostKadai extends React.Component {
             }
             console.log(data)
             this.props.refresh();
-        }).catch(err => console.error("error!: ", err));
+        }).catch(error => {
+                let text = error;
+                if (error["error"]) {
+                    const text = error.error;
+                }
+                alert("エラーが発生しました：" + text);
+            });
+
     }
 
     render = () => (
