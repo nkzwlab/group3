@@ -37,12 +37,12 @@ func GetUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	} else if login_name != "" {
 		user, err = getUserWithLoginName(login_name)
 	} else {
-		respondError(w, "invalid form value")
+		respondError(w, "ユーザが見つかりませんでした")
 		return
 	}
 
 	if err != nil {
-		respondError(w, "failed to get user")
+		respondError(w, "ユーザの取得に失敗しました")
 		return
 	}
 
@@ -58,19 +58,19 @@ func CreateUser(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	login_name := r.FormValue("login_name")
 
 	if login_name == "" {
-		respondError(w, "invalid form value. login_name can't be empty")
+		respondError(w, "ログイン名が必要です")
 		return
 	}
 
 	if m, _ := regexp.MatchString(`^[0-9a-zA-Z-]*$`, login_name); !m {
-		respondError(w, "login name must matches regex `[0-9a-zA-Z-]*$`")
+		respondError(w, "ログイン名には英数字、ハイフンのみ利用できます")
 		return
 	}
 
 	// create user
 	user, err := createUser(login_name)
 	if err != nil {
-		respondError(w, "failed to create user")
+		respondError(w, "ユーザの作成に失敗しました")
 		return
 	}
 
@@ -84,14 +84,14 @@ func KadaiIndex(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	// get form value
 	user_id, err := strconv.Atoi(r.FormValue("user_id"))
 	if err != nil || user_id == 0 {
-		respondError(w, "invalid user id ")
+		respondError(w, "課題取得中にエラーが発生しました")
 		return
 	}
 
 	// get kadais
 	kadais, err := kadaiIndex(user_id)
 	if err != nil {
-		respondError(w, "failed to get index")
+		respondError(w, "課題取得中にエラーが発生しました")
 		return
 	}
 
@@ -105,14 +105,14 @@ func CreateKadai(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	// get form value
 	user_id, err := strconv.Atoi(r.FormValue("user_id"))
 	if err != nil {
-		respondError(w, "invalid user id")
+		respondError(w, "課題作成中にエラーが発生しました")
 		return
 	}
 
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 	if title == "" || content == "" {
-		respondError(w, "title and content can't be empty")
+		respondError(w, "タイトル、内容を埋めてください")
 		return
 	}
 
@@ -120,7 +120,7 @@ func CreateKadai(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	kadai, err := createKadai(user_id, title, content, draft)
 	if err != nil {
-		respondError(w, "failed to create kadai")
+		respondError(w, "課題作成中にエラーが発生しました")
 		return
 	}
 
@@ -133,7 +133,7 @@ func UpdateKadai(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	kadai_id, err := strconv.Atoi(r.FormValue("kadai_id"))
 	if err != nil {
-		respondError(w, "invalid kadai id")
+		respondError(w, "課題の更新中にエラーが発生しました")
 		return
 	}
 
@@ -155,13 +155,13 @@ func UpdateKadai(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 
 	if len(updateData) == 0 {
-		respondError(w, "you must specify at least one field")
+		respondError(w, "最低一つのフィールドを更新する必要があります")
 		return
 	}
 
 	kadai, err := updateKadai(kadai_id, updateData)
 	if err != nil {
-		respondError(w, "failed to update kadai")
+		respondError(w, "課題の更新中にエラーが発生しました")
 		return
 	}
 
@@ -174,13 +174,13 @@ func KadaiDone(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	kadai_id, err := strconv.Atoi(r.FormValue("kadai_id"))
 	if err != nil {
-		respondError(w, "invalid kadai id")
+		respondError(w, "処理中にエラーが発生しました")
 		return
 	}
 
 	err = kadaiDone(kadai_id)
 	if err != nil {
-		respondError(w, "failed to mark as done")
+		respondError(w, "データの更新に失敗しました")
 		return
 	}
 
