@@ -10,16 +10,15 @@ class App extends React.Component {
     }
 
     setUser = user => {
-        console.log("logged in as :", user.login_name)
-
         if (!user.login_name || !user.id) {
             throw user["error"];
         }
-
         this.setState({loggedIn: true, user: {
             loginName: user.login_name,
             id: user.id
         }});
+        console.log("logged in as :", user.login_name)
+        return new Promise((a, b) => {})
     }
 
     login = loginName => {
@@ -32,6 +31,7 @@ class App extends React.Component {
                 if (error["error"]) {
                     const text = error.error;
                 }
+                console.log(text)
                 const newUrl =  `http://localhost:8080/user/new?login_name=${loginName}`;
                 return fetch(newUrl, {
                     method:"POST",
@@ -40,7 +40,9 @@ class App extends React.Component {
                     })
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                return response.json();
+            })
             .then(this.setUser)
             .catch(error => {
                 let text = error;
@@ -109,7 +111,6 @@ class KadaiList extends React.Component {
     }
 
     refreshKadais = () => {
-        console.log("refresh");
         const kadaiURL = `http://localhost:8080/kadai?user_id=${this.props.user.id}`;
         fetch(kadaiURL)
             .then(response => response.json())
@@ -201,14 +202,12 @@ class KadaiItem extends React.Component {
     }
 
     startEdit = e => {
-        console.log("edit started");
         let kadai = this.state.kadai;
         kadai.editing = true;
         this.setState({kadai});
     }
 
     finishEdit = kadai => {
-        console.log("edit finished");
         kadai.editing = false;
         this.setState({kadai})
     }
@@ -386,7 +385,6 @@ class PostKadai extends React.Component {
             if (data["error"]) {
                 console.error(data.error);
             }
-            console.log(data)
             this.props.refresh();
         }).catch(error => {
                 let text = error;
